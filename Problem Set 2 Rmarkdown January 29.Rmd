@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   )
 ```
 
+1. Here is the link to my repository,"PSet2" https://github.com/emorybayer/PSet2
 
 
 2. Corrected Code Chunk below 
