@@ -1,0 +1,127 @@
+---
+title: "Problem Set Week 2"
+author: Emory Bayer
+output: pdf_document
+date: "2024-01-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = TRUE,
+  fig.align = 'center',
+  message = FALSE,
+  warning = FALSE,
+  library(tidyverse),
+  library(knitr)
+  )
+```
+
+1. 
+
+2. Corrected Code Chunk below 
+```{r}
+library(tidyverse)
+library(knitr)
+#added library(knitr) because we needed to use the kable function below
+
+Gspace = read_csv("greenspace_data_share.csv")
+#added "" around title of data
+
+table = 
+  Gspace |> 
+  group_by(Major_Geo_Region) |>
+#added a |> to make output of the groupput line the input of the summarise line
+summarise(
+  obs = n(),
+#added a comma to connect the lines 
+  avg = mean(annual_weight_avg_2020)
+)
+
+kable(table, digits =1)
+#I replaced the dataset name, with the name of the table
+```
+
+3.The greenspace data covers six different continents
+
+
+4. The green space scores for urban areas in 2021 were on average for each 
+continent, 0.3. In terms of the NDVI rating, this is very low.See the coding below for proof. 
+```{r}
+table2021 = Gspace |>
+  group_by(Major_Geo_Region) |>
+  summarise(
+    obs = sum(!is.na(annual_avg_2021)),
+    avg = mean(annual_avg_2021, na.rm = TRUE)
+  )
+kable(table2021, digits = 1)
+```
+5. 66 urban areas scored high or above for 2015. 71 urban areas scored exceptionally low from 2010 to 2021. There were 225 urban areas in arid climates which became more green from 2010 to 2020.Please see the code below for proof. 
+```{r}
+HighNDVI2015 = 
+  Gspace |>
+  filter(indicator_2015 %in% c("High","Very High","Exceptionally
+         High")) |>
+  summarise(
+    obs =n()
+  )
+
+ExceptLow = 
+  Gspace |>
+  filter(
+  indicator_2010 == "Exceptionally Low",
+  indicator_2015 == "Exceptionally Low",
+  indicator_2020 == "Exceptionally Low",
+  indicator_2021 == "Exceptionally Low", 
+  ) |>
+  summarise(
+    obs =n()
+  )
+
+Arid_greener_areas = 
+  Gspace |>
+  filter(Climate_region == "Arid") |>
+  filter(annual_weight_avg_2010 < annual_weight_avg_2020) |>
+  summarise(
+    obs = n()
+  )
+```
+6. There were 128 urban areas which became less green. These changes were largelyconcentrated in Continental Europe (32 observations),Tropical
+Africa (19 observations), Temperate Europe (14 observations), Temperate Asia(13 observations), and Tropical Asia (13 observations).Please see the coding below for proof. 
+```{r}
+Less_green_area = 
+  Gspace |>
+  filter(annual_avg_2021 < annual_avg_2010) |>
+  group_by(
+    Climate_region,
+    Major_Geo_Region) |>
+  summarise(
+    obs = n()
+  )
+```
+7. Please see the histogram below showing the change in greenspace from 2010 to 2021. I have in include the coding below as well. 
+```{r}
+Greenspace_chg_histo = 
+  Gspace |>
+   mutate(change_in_greenspace = annual_avg_2021 - annual_avg_2010) |>
+  mutate(year = annual_avg_2010 + annual_avg_2015 + annual_avg_2020 + 
+           annual_avg_2021)
+
+ggplot(Greenspace_chg_histo, aes(x = change_in_greenspace)) + 
+  geom_histogram()+
+  labs(title = "Change in Greeenspace Distribution from 2010 to 2021",
+       x = "Change in GreenSpace from 2010 to 2021",
+       y= "Number of Observations"
+  )
+```
+
+8. Here is the scatterplot of population weighted greenspace in 2021 over greenspace in 2010. 
+```{r}
+ggplot(Gspace) +
+  geom_point(aes(x = annual_weight_avg_2010, y = annual_weight_avg_2010, color = "2010")) +
+  geom_point(aes(x = annual_weight_avg_2021, y = annual_weight_avg_2021, color = "2021")) +
+  scale_color_manual(values = c("2010" = "red", "2021" = "blue"), 
+                     name = "Year",
+                     labels = c("2010", "2021")) +
+  labs(title = "Scatterplot of Annual Weight Avg (2010 vs 2021)")
+```
