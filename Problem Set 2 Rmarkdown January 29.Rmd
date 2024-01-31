@@ -61,11 +61,13 @@ kable(table2021, digits = 1)
 ```{r}
 HighNDVI2015 = 
   Gspace |>
-  filter(indicator_2015 %in% c("High","Very High","Exceptionally
-         High")) |>
+  filter(indicator_2015 == "High" | indicator_2015 == "Very High" | 
+           indicator_2015 == "Exceptionally High") |>
   summarise(
     obs =n()
   )
+
+kable(HighNDVI2015, digits = 1)
 
 ExceptLow = 
   Gspace |>
@@ -124,5 +126,5 @@ ggplot(Gspace) +
   scale_color_manual(values = c("2010" = "red", "2021" = "blue"), 
                      name = "Year",
                      labels = c("2010", "2021")) +
-  labs(title = "Scatterplot of Annual Weight Avg (2010 vs 2021)")
+  labs(title = "Scatterplot of Population Weighted GreenSpace comparing 2010 to 2021")
 ```
